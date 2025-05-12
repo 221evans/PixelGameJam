@@ -16,7 +16,7 @@ void RunGame(struct Game *game);
 void InitGame();
 void UpdateGame(float deltaTime);
 void DrawGame();
-void DestroyGame(struct Game *game);
+void DestroyGame();
 
 
 #endif //GAME_H

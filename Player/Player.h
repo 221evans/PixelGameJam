@@ -11,7 +11,15 @@ struct Player
     int health;
     int damage;
     int speed;
-    Texture2D playerTexture;
+    int currentFrame;
+    int frameSpeed;
+    int frameCount;
+    int totalFrames;
+    float frameTimer;
+    bool isRunning;
+    bool isIdle;
+    Texture2D playerIdleTexture;
+    Texture2D playerRunTexture;
     Rectangle playerRectangle;
     Rectangle destRec;
     Rectangle sourceRec;
@@ -22,7 +30,9 @@ struct Player
 void InitPlayer(struct Player *player);
 void UpdatePlayer(struct Player *player, float deltaTime);
 void DrawPlayer(const struct Player *player);
-void DestroyPlayer(struct Player *player);
+
+void DestroyPlayer(const struct Player *player);
+
 
 
 #endif //PLAYER_H

@@ -23,6 +23,7 @@ void RunGame(struct Game *game)
         UpdateGame(deltaTime);
         EndDrawing();
     }
+    DestroyGame();
 }
 
 
@@ -41,3 +42,10 @@ void UpdateGame(float deltaTime)
 {
     UpdatePlayer(&player, deltaTime);
 }
+
+void DestroyGame()
+{
+    DestroyPlayer(&player);
+    CloseWindow();
+}
+
