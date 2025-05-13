@@ -87,13 +87,13 @@ void UpdatePlayer(struct Player *player, const float deltaTime)
     {
         player->totalFrames = 6;
         player->frameSpeed = 10;
-        printf("Frame Speed: %d\n", player->frameSpeed);
+        // printf("Frame Speed: %d\n", player->frameSpeed);
     }
     else if (player->isIdle)
     {
         player->totalFrames = 4;
         player->frameSpeed = 6;
-        printf("Frame Speed: %d\n", player->frameSpeed);
+        // printf("Frame Speed: %d\n", player->frameSpeed);
     }
 
     // Animation timing

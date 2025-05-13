@@ -3,7 +3,7 @@ set(CMAKE_POLICY_DEFAULT_CMP0000 NEW)
 project(PixelGameJam C)
 
 set(CMAKE_C_STANDARD 23)
-
+file(COPY ${CMAKE_SOURCE_DIR}/Resources DESTINATION ${CMAKE_BINARY_DIR})
 # Include FetchContent module
 include(FetchContent)
 
