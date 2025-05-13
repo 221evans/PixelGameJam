@@ -6,10 +6,13 @@
 #define GAME_H
 #include "raylib.h"
 #include "../Player/Player.h"
+#include "../Enemy/Enemy.h"
 
 struct Player player;
+struct Enemy enemy;
 struct Game
 {
+
 };
 
 void RunGame(struct Game *game);

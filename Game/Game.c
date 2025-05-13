@@ -31,16 +31,19 @@ void InitGame()
 {
 
     InitPlayer(&player);
+    EnemyInit(&enemy);
 }
 
 void DrawGame()
 {
     DrawPlayer(&player);
+    EnemyDraw(&enemy);
 }
 
 void UpdateGame(float deltaTime)
 {
     UpdatePlayer(&player, deltaTime);
+    EnemyUpdate(&enemy, deltaTime);
 }
 
 void DestroyGame()

@@ -100,7 +100,7 @@ void UpdatePlayer(struct Player *player, const float deltaTime)
     player->frameTimer += deltaTime;
 
     // Convert frameSpeed to the time each frame should be displayed
-    float frameDuration = 1.0f / player->frameSpeed;
+    float frameDuration = 1.0f / (float) player->frameSpeed;
 
     // Check if it's time for the next frame
     if (player->frameTimer >= frameDuration) {

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.31)
+set(CMAKE_POLICY_DEFAULT_CMP0000 NEW)
 project(PixelGameJam C)
 
 set(CMAKE_C_STANDARD 23)
@@ -18,7 +19,9 @@ FetchContent_MakeAvailable(raylib)
 
 # Add your executable
 add_executable(PixelGameJam main.c Game/Game.c
-        Player/Player.c)
+        Player/Player.c
+        Enemy/Enemy.h
+        Enemy/Enemy.c)
 
 # Link Raylib to your executable
 target_link_libraries(PixelGameJam PRIVATE raylib)
