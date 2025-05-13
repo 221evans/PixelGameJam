@@ -27,8 +27,8 @@ void InitPlayer(struct Player *player)
     // Init Animations
     player->currentFrame = 0;
     player->frameCount = 0;
-    player->frameSpeed = 10;
-    player->totalFrames = 6;
+    player->frameSpeed = 8;
+    player->totalFrames = 4;
     player->isRunning = false;
     player->isIdle = true;
     player->frameTimer = 0.0f;
@@ -44,6 +44,7 @@ void DrawPlayer(const struct Player *player)
     }
     else if (player->isIdle)
     {
+
         DrawTexturePro(player->playerIdleTexture, player->sourceRec,player->destRec,player->origin,0,RAYWHITE);
     }
 
@@ -79,6 +80,20 @@ void UpdatePlayer(struct Player *player, const float deltaTime)
         player->currentFrame = 0;
         player->frameTimer = 0.0f;
         player->sourceRec.x = 0;
+    }
+
+
+    if (player->isRunning)
+    {
+        player->totalFrames = 6;
+        player->frameSpeed = 10;
+        printf("Frame Speed: %d\n", player->frameSpeed);
+    }
+    else if (player->isIdle)
+    {
+        player->totalFrames = 4;
+        player->frameSpeed = 6;
+        printf("Frame Speed: %d\n", player->frameSpeed);
     }
 
     // Animation timing
