@@ -15,14 +15,14 @@ void EnemyInit(struct Enemy* enemy)
     enemy->enemyIdleTexture = LoadTexture("Resources/Zombie//Muscle/Idle-Sheet.png");
     enemy->enemyRunTexture = LoadTexture("Resources/Zombie//Muscle/Run-Sheet.png");
     enemy->enemyRectangle = (Rectangle) {0,0,64,64};
-    enemy->enemyPosition = (Vector2) {300, 385};
+    enemy->enemyPosition = (Vector2) {300, 300};
     enemy->sourceRec = (Rectangle) {0,0,64,64};
     enemy->destRec = (Rectangle) {
 
         enemy->enemyPosition.x,
         enemy->enemyPosition.y,
-        enemy->sourceRec.width,
-        enemy->sourceRec.height
+        enemy->sourceRec.width * 1.5f,
+        enemy->sourceRec.height * 1.5f
     };
 
     // Init animations

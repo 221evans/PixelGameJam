@@ -14,14 +14,14 @@ void InitPlayer(struct Player *player)
     player->playerIdleTexture = LoadTexture("Resources/Hunter/Idle-Side-Sheet.png");
     player->playerRunTexture = LoadTexture("Resources/Hunter/Walk-Side-Sheet.png");
     player->playerRectangle = (Rectangle) { 0, 0, 64, 64 };
-    player->playerPosition = (Vector2) { 100, 385 };
+    player->playerPosition = (Vector2) { 100, 300 };
     player->origin = (Vector2) { 0, 0 };
     player->sourceRec = (Rectangle) {0,0,64,64};
     player->destRec = (Rectangle) {
         player->playerPosition.x,
         player->playerPosition.y,
-        player->playerRectangle.width,
-        player->playerRectangle.height,
+        player->playerRectangle.width * 1.5f,
+        player->playerRectangle.height *1.5f,
     };
 
     // Init Animations
