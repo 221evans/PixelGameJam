@@ -18,6 +18,7 @@ struct Player
     float frameTimer;
     bool isRunning;
     bool isIdle;
+    bool isFacingRight;
     Texture2D playerIdleTexture;
     Texture2D playerRunTexture;
     Rectangle playerRectangle;

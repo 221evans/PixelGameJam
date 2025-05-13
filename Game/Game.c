@@ -49,6 +49,7 @@ void UpdateGame(float deltaTime)
 void DestroyGame()
 {
     DestroyPlayer(&player);
+    EnemyDestroy(&enemy);
     CloseWindow();
 }
 

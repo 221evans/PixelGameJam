@@ -18,6 +18,7 @@ struct Enemy
     float frameTimer;
     bool isRunning;
     bool isIdle;
+    bool isFacingRight;
     Rectangle enemyRectangle;
     Rectangle destRec;
     Rectangle sourceRec;
@@ -30,6 +31,7 @@ struct Enemy
 void EnemyInit(struct Enemy *enemy);
 void EnemyDraw(struct Enemy *enemy);
 void EnemyUpdate(struct Enemy *enemy, const float deltaTime);
+void EnemyDestroy(struct Enemy *enemy);
 
 
 #endif //ENEMY_H

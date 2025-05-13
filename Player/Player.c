@@ -32,23 +32,25 @@ void InitPlayer(struct Player *player)
     player->isRunning = false;
     player->isIdle = true;
     player->frameTimer = 0.0f;
+    player->isFacingRight = true;
 }
 
 
 
 void DrawPlayer(const struct Player *player)
 {
-    if (player->isRunning)
-    {
-        DrawTexturePro(player->playerRunTexture, player->sourceRec,player->destRec,player->origin,0,RAYWHITE);
+
+    Texture2D currentTexture = player->isRunning ? player->playerRunTexture : player->playerIdleTexture;
+
+    // Create a source rectangle that can be flipped
+    Rectangle srcRec = player->sourceRec;
+
+    // When facing left, flip the sprite horizontally by making width negative
+    if (!player->isFacingRight) {
+        srcRec.width = -srcRec.width;
     }
-    else if (player->isIdle)
-    {
 
-        DrawTexturePro(player->playerIdleTexture, player->sourceRec,player->destRec,player->origin,0,RAYWHITE);
-    }
-
-
+    DrawTexturePro(currentTexture, srcRec,player->destRec,player->origin,0,RAYWHITE);
 }
 
 void UpdatePlayer(struct Player *player, const float deltaTime)
@@ -65,8 +67,16 @@ void UpdatePlayer(struct Player *player, const float deltaTime)
         player->isIdle = false;
 
         // Handle actual movement
-        if (IsKeyDown(KEY_A)) player->playerPosition.x -= player->speed * deltaTime;
-        if (IsKeyDown(KEY_D)) player->playerPosition.x += player->speed * deltaTime;
+        if (IsKeyDown(KEY_A))
+        {
+            player->playerPosition.x -= player->speed * deltaTime;
+            player->isFacingRight = false;
+        }
+        if (IsKeyDown(KEY_D))
+        {
+            player->playerPosition.x += player->speed * deltaTime;
+            player->isFacingRight = true;
+        }
         if (IsKeyDown(KEY_W)) player->playerPosition.y -= player->speed * deltaTime;
         if (IsKeyDown(KEY_S)) player->playerPosition.y += player->speed * deltaTime;
     }

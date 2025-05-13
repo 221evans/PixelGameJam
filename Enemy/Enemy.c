@@ -3,10 +3,7 @@
 //
 
 #include "Enemy.h"
-
 #include <math.h>
-#include <stdio.h>
-
 #include "raylib.h"
 #include "../Game/Game.h"
 
@@ -36,18 +33,25 @@ void EnemyInit(struct Enemy* enemy)
     enemy->isRunning = false;
     enemy->isIdle = true;
     enemy->frameTimer = 0;
+    enemy->isFacingRight = true;
 }
 
-void EnemyDraw(struct Enemy* enemy)
+void EnemyDraw(struct Enemy *enemy)
 {
-    if (enemy->isRunning)
+
+    Texture2D currentTexture = enemy->isRunning ? enemy->enemyRunTexture : enemy->enemyIdleTexture;
+
+    Rectangle srcRec = enemy->sourceRec;
+
+    if (!enemy->isFacingRight)
     {
-        DrawTexturePro(enemy->enemyRunTexture,enemy->sourceRec,enemy->destRec,enemy->origin,0,RAYWHITE);
+        srcRec.width = -srcRec.width;
     }
-    else if (enemy->isIdle)
-    {
-        DrawTexturePro(enemy->enemyIdleTexture,enemy->sourceRec,enemy->destRec,enemy->origin,0,RAYWHITE);
-    }
+
+    DrawTexturePro(currentTexture,srcRec,enemy->destRec,enemy->origin,0,RAYWHITE);
+
+
+
 }
 
 void EnemyUpdate(struct Enemy* enemy, const float deltaTime)
@@ -59,6 +63,15 @@ void EnemyUpdate(struct Enemy* enemy, const float deltaTime)
         player.playerPosition.x - enemy->enemyPosition.x,
         player.playerPosition.y - enemy->enemyPosition.y
     };
+
+    if (direction.x > 0)
+    {
+        enemy->isFacingRight = true;
+    }
+    else if (direction.x < 0)
+    {
+        enemy->isFacingRight = false;
+    }
 
     // Calculate distance to player
     float distance = sqrtf(direction.x * direction.x + direction.y * direction.y);
@@ -115,3 +128,10 @@ void EnemyUpdate(struct Enemy* enemy, const float deltaTime)
         enemy->sourceRec.x = (float)enemy->currentFrame * enemy->sourceRec.width;
     }
 }
+
+void EnemyDestroy(struct Enemy* enemy)
+{
+    UnloadTexture(enemy->enemyRunTexture);
+    UnloadTexture(enemy->enemyIdleTexture);
+}
+
