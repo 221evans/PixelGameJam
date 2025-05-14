@@ -19,8 +19,10 @@ struct Player
     bool isRunning;
     bool isIdle;
     bool isFacingRight;
+    bool isAttacking;
     Texture2D playerIdleTexture;
     Texture2D playerRunTexture;
+    Texture2D playerAttackTexture;
     Rectangle playerRectangle;
     Rectangle destRec;
     Rectangle sourceRec;

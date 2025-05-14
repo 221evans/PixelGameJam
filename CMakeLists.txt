@@ -21,7 +21,8 @@ FetchContent_MakeAvailable(raylib)
 add_executable(PixelGameJam main.c Game/Game.c
         Player/Player.c
         Enemy/Enemy.h
-        Enemy/Enemy.c)
+        Enemy/Enemy.c
+Background/Background.c)
 
 # Link Raylib to your executable
 target_link_libraries(PixelGameJam PRIVATE raylib)

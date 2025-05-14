@@ -7,9 +7,11 @@
 #include "raylib.h"
 #include "../Player/Player.h"
 #include "../Enemy/Enemy.h"
+#include "../Background/Background.h"
 #define MAX_ENEMIES 50
 
 struct Player player;
+struct Background background;
 
 struct Game
 {

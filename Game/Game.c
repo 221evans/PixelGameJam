@@ -20,6 +20,7 @@ void RunGame(struct Game *game)
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
+        DrawBackground(&background);
         DrawGame(game);
         UpdateGame(game,deltaTime);
         EndDrawing();
@@ -30,7 +31,7 @@ void RunGame(struct Game *game)
 
 void InitGame(struct Game *game)
 {
-
+    InitBackground(&background);
     InitPlayer(&player);
     game->waveTimer = 0;
     game->timeBetweenWaves = 30.0f;
@@ -45,6 +46,8 @@ void InitGame(struct Game *game)
 }
 
 void DrawGame(struct Game *game) {
+
+
     // Draw all active enemies
     for (int i = 0; i < game->enemyCount; i++) {
         EnemyDraw(&game->enemies[i]);
@@ -127,7 +130,7 @@ void UpdateGame( struct Game *game, float deltaTime)
 void DestroyGame()
 {
     DestroyPlayer(&player);
-
+    DestroyBackground(&background);
     CloseWindow();
 }
 
