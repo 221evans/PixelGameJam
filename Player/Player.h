@@ -35,6 +35,7 @@ void UpdatePlayer(struct Player *player, float deltaTime);
 void DrawPlayer(const struct Player *player);
 void DestroyPlayer(const struct Player *player);
 Rectangle GetPlayerAttackHitbox(const struct Player *player);
+bool DamagePlayer(struct Player *player, int damage);
 
 
 #endif //PLAYER_H

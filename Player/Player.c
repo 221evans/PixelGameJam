@@ -183,3 +183,13 @@ Rectangle GetPlayerAttackHitbox(const struct Player* player)
 
     return attackHitbox;
 }
+
+bool DamagePlayer(struct Player* player, int damage)
+{
+    player->health -= damage;
+    if (player->health <= 0)
+    {
+        return true;
+    }
+    return false;
+}

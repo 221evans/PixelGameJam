@@ -39,17 +39,18 @@ void InitGame(struct Game *game)
     game->currentWave = 1;
     game->enemySpawnTimer = 0;
     game->enemySpawnRate = 3.0f;
-
+    game->playerDamageCooldown = 0.0f;
     game->enemyCount = 0;
     game->maxEnemies = 3;
+    game->state = GAME_PLAYING;
+    game->gameOverTimer = 0.0f;
 
     SpawnEnemyWave(game);
 
 }
 
 void DrawGame(struct Game *game) {
-
-
+    // Always draw the game world
     // Draw all active enemies
     for (int i = 0; i < game->enemyCount; i++) {
         EnemyDraw(&game->enemies[i]);
@@ -58,80 +59,124 @@ void DrawGame(struct Game *game) {
     // Draw player on top
     DrawPlayer(&player);
 
-    // Draw UI - wave info
-    char waveText[50];
-    sprintf(waveText, "WAVE: %d", game->currentWave);
-    DrawText(waveText, 20, 20, 20, WHITE);
+    // Draw UI based on game state
+    switch (game->state)
+    {
+        case GAME_PLAYING:
+            // Draw UI - wave info
+            char waveText[50];
+            sprintf(waveText, "WAVE: %d", game->currentWave);
+            DrawText(waveText, 20, 20, 20, WHITE);
 
-    // Draw progress to next wave
-    float waveProgress = game->waveTimer / game->timeBetweenWaves;
-    DrawRectangle(20, 50, 200, 10, GRAY);
-    DrawRectangle(20, 50, (int)(200 * waveProgress), 10, RED);
+            // Draw progress to next wave
+            float waveProgress = game->waveTimer / game->timeBetweenWaves;
+            DrawRectangle(20, 50, 200, 10, GRAY);
+            DrawRectangle(20, 50, (int)(200 * waveProgress), 10, RED);
 
-
+            // Draw player health
+            char healthText[50];
+            sprintf(healthText, "HEALTH: %d", player.health);
+            DrawText(healthText, 20, 70, 20, WHITE);
+            
+            // Health bar
+            DrawRectangle(20, 100, 200, 10, GRAY);
+            DrawRectangle(20, 100, (int)(200 * player.health / 100.0f), 10, GREEN);
+            
+            // Draw damage cooldown indicator (optional)
+            if (game->playerDamageCooldown > 0) {
+                DrawRectangle(20, 115, (int)(200 * game->playerDamageCooldown), 5, RED);
+            }
+            break;
+            
+        case GAME_OVER:
+            // Draw the game over screen on top of the game world
+            DrawGameOverScreen(game);
+            break;
+    }
 }
 
-void UpdateGame( struct Game *game, float deltaTime)
+void UpdateGame(struct Game *game, float deltaTime)
 {
-    UpdatePlayer(&player, deltaTime);
-
-    // Wave timer
-    game->waveTimer += deltaTime;
-    if (game->waveTimer >= game->timeBetweenWaves)
+    // Handle different game states
+    switch (game->state)
     {
-        SpawnEnemyWave(game);
-        game->waveTimer = 0;
+        case GAME_PLAYING:
+            // Normal gameplay updates
+            UpdatePlayer(&player, deltaTime);
+
+            // Wave timer
+            game->waveTimer += deltaTime;
+            if (game->waveTimer >= game->timeBetweenWaves)
+            {
+                SpawnEnemyWave(game);
+                game->waveTimer = 0;
+            }
+
+            // Enemy spawner (gradually fill up to max enemies)
+            game->enemySpawnTimer += deltaTime;
+            if (game->enemySpawnTimer >= game->enemySpawnRate && game->enemyCount < game->maxEnemies)
+            {
+                // Randomly choose a side of the screen
+                int side = GetRandomValue(0, 3);
+
+                Vector2 position = {};
+                switch (side) {
+                case 0:  // Top
+                    position.x = GetRandomValue(50, 750);
+                    position.y = -50;
+                    break;
+                case 1:  // Right
+                    position.x = 850;
+                    position.y = GetRandomValue(50, 400);
+                    break;
+                case 2:  // Bottom
+                    position.x = GetRandomValue(50, 750);
+                    position.y = 500;
+                    break;
+                case 3:  // Left
+                    position.x = -50;
+                    position.y = GetRandomValue(50, 400);
+                    break;
+                }
+
+                SpawnEnemy(game, position);
+                game->enemySpawnTimer = 0;
+            }
+
+            // Update active enemies
+            for (int i = 0; i < game->enemyCount; i++)
+            {
+                EnemyUpdate(&game->enemies[i], deltaTime);
+
+                // Check if this enemy should be removed (e.g., if health <= 0)
+                if (game->enemies[i].health <= 0)
+                {
+                    // Remove this enemy by replacing it with the last active enemy
+                    EnemyDestroy(&game->enemies[i]);
+                    game->enemies[i] = game->enemies[game->enemyCount - 1];
+                    game->enemyCount--;
+                    i--; // Check the newly swapped enemy in this position
+                }
+            }
+
+            // Handle player attacking enemies
+            HandlePlayerAttack(game);
+            
+            // Handle enemies damaging player
+            HandleDamageToPlayer(game, deltaTime);
+            break;
+            
+        case GAME_OVER:
+            // Update game over timer for effects
+            game->gameOverTimer += deltaTime;
+            
+            // Check for restart input
+            if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE))
+            {
+                RestartGame(game);
+            }
+            break;
     }
-
-    // Enemy spawner (gradually fill up to max enemies)
-    game->enemySpawnTimer += deltaTime;
-    if (game->enemySpawnTimer >= game->enemySpawnRate && game->enemyCount < game->maxEnemies)
-    {
-        // Randomly choose a side of the screen
-        int side = GetRandomValue(0, 3);
-
-        Vector2 position = {};
-        switch (side) {
-        case 0:  // Top
-            position.x = GetRandomValue(50, 750);
-            position.y = -50;
-            break;
-        case 1:  // Right
-            position.x = 850;
-            position.y = GetRandomValue(50, 400);
-            break;
-        case 2:  // Bottom
-            position.x = GetRandomValue(50, 750);
-            position.y = 500;
-            break;
-        case 3:  // Left
-            position.x = -50;
-            position.y = GetRandomValue(50, 400);
-            break;
-        }
-
-        SpawnEnemy(game, position);
-        game->enemySpawnTimer = 0;
-    }
-
-    // Update active enemies
-    for (int i = 0; i < game->enemyCount; i++)
-    {
-        EnemyUpdate(&game->enemies[i], deltaTime);
-
-        // Check if this enemy should be removed (e.g., if health <= 0)
-        if (game->enemies[i].health <= 0)
-        {
-            // Remove this enemy by replacing it with the last active enemy
-            EnemyDestroy(&game->enemies[i]);
-            game->enemies[i] = game->enemies[game->enemyCount - 1];
-            game->enemyCount--;
-            i--; // Check the newly swapped enemy in this position
-        }
-
-        HandlePlayerAttack(game);
-    }
-
 }
 
 void DestroyGame()
@@ -268,3 +313,99 @@ void HandlePlayerAttack(struct Game* game)
 
 }
 
+void HandleDamageToPlayer(struct Game *game, float deltaTime)
+{
+    // Update cooldown timer
+    if (game->playerDamageCooldown > 0)
+    {
+        game->playerDamageCooldown -= deltaTime;
+    }
+    
+    // Only check for damage if cooldown has expired and game is in playing state
+    if (game->playerDamageCooldown <= 0 && game->state == GAME_PLAYING)
+    {
+        // Check each enemy's distance to player
+        for (int i = 0; i < game->enemyCount; i++)
+        {
+            // Use rectangle collision
+            if (CheckCollisionRecs(game->enemies[i].destRec, player.destRec))
+            {
+                // Enemy is close enough to damage player
+                bool playerDied = DamagePlayer(&player, game->enemies[i].damage);
+                
+                // Reset cooldown so player isn't damaged immediately again
+                game->playerDamageCooldown = 1.0f;  // 1 second cooldown
+                
+                // Handle player death
+                if (playerDied)
+                {
+                    // Change game state to GAME_OVER
+                    game->state = GAME_OVER;
+                    game->gameOverTimer = 0.0f;
+                    printf("Game Over! Player has died.\n");
+                }
+                
+                // Only take damage from one enemy per cooldown period
+                break;
+            }
+        }
+    }
+}
+
+void DrawGameOverScreen(struct Game *game)
+{
+    // Draw semi-transparent overlay
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), ColorAlpha(BLACK, 0.7f));
+    
+    // Draw game over text
+    const char *gameOverText = "GAME OVER";
+    int fontSize = 50;
+    int textWidth = MeasureText(gameOverText, fontSize);
+    DrawText(gameOverText, (GetScreenWidth() - textWidth) / 2, GetScreenHeight() / 3, fontSize, RED);
+    
+    // Draw wave survived text
+    char waveText[50];
+    sprintf(waveText, "You survived %d waves", game->currentWave - 1);
+    fontSize = 30;
+    textWidth = MeasureText(waveText, fontSize);
+    DrawText(waveText, (GetScreenWidth() - textWidth) / 2, GetScreenHeight() / 2, fontSize, WHITE);
+    
+    // Draw restart instruction
+    const char *restartText = "Press ENTER to restart";
+    fontSize = 25;
+    textWidth = MeasureText(restartText, fontSize);
+    DrawText(restartText, (GetScreenWidth() - textWidth) / 2, GetScreenHeight() * 2/3, fontSize, WHITE);
+    
+    // Blink the restart text
+    if ((int)(game->gameOverTimer * 2) % 2 == 0)
+    {
+        DrawText(restartText, (GetScreenWidth() - textWidth) / 2, GetScreenHeight() * 2/3, fontSize, WHITE);
+    }
+}
+
+void RestartGame(struct Game *game)
+{
+    // Clean up existing enemies
+    for (int i = 0; i < game->enemyCount; i++)
+    {
+        EnemyDestroy(&game->enemies[i]);
+    }
+    
+    // Reset game state
+    game->waveTimer = 0;
+    game->timeBetweenWaves = 30.0f;
+    game->currentWave = 1;
+    game->enemySpawnTimer = 0;
+    game->enemySpawnRate = 3.0f;
+    game->playerDamageCooldown = 0.0f;
+    game->state = GAME_PLAYING;
+    game->gameOverTimer = 0.0f;
+    game->enemyCount = 0;
+    game->maxEnemies = 3;
+    
+    // Reset player
+    InitPlayer(&player);
+    
+    // Start a new wave
+    SpawnEnemyWave(game);
+}
