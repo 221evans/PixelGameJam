@@ -135,3 +135,15 @@ void EnemyDestroy(struct Enemy* enemy)
     UnloadTexture(enemy->enemyIdleTexture);
 }
 
+bool DamageEnemy(struct Enemy* enemy, int damage)
+{
+    enemy->health -= damage;
+
+    if (enemy->health <= 0)
+    {
+        return true;
+    }
+
+    return false;
+}
+

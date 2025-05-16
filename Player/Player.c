@@ -8,6 +8,7 @@
 
 void InitPlayer(struct Player *player)
 {
+
     player->health = 100;
     player->damage = 10;
     player->speed = 100;
@@ -34,6 +35,7 @@ void InitPlayer(struct Player *player)
     player->isIdle = true;
     player->frameTimer = 0.0f;
     player->isFacingRight = true;
+    player->isAttacking = false;
 }
 
 
@@ -161,4 +163,23 @@ void DestroyPlayer(const struct Player *player)
 {
     UnloadTexture(player->playerIdleTexture);
     UnloadTexture(player->playerRunTexture);
+    UnloadTexture(player->playerAttackTexture);
+}
+
+Rectangle GetPlayerAttackHitbox(const struct Player* player)
+{
+    Rectangle attackHitbox = player->destRec;
+
+    if (player->isFacingRight)
+    {
+        attackHitbox.x += attackHitbox.width;
+        attackHitbox.width = 1.0f;
+    }
+    else
+    {
+        attackHitbox.x -= 1.0f;
+        attackHitbox.width = 1.0f;
+    }
+
+    return attackHitbox;
 }

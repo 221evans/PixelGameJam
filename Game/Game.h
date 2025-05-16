@@ -4,11 +4,12 @@
 
 #ifndef GAME_H
 #define GAME_H
+
 #include "raylib.h"
 #include "../Player/Player.h"
 #include "../Enemy/Enemy.h"
 #include "../Background/Background.h"
-#define MAX_ENEMIES 50
+#define MAX_ENEMIES 500
 
 struct Player player;
 struct Background background;
@@ -32,6 +33,8 @@ void DrawGame(struct Game *game);
 void DestroyGame();
 void SpawnEnemy(struct Game* game, Vector2 position);
 void SpawnEnemyWave(struct Game *game);
+void HandlePlayerAttack(struct Game *game);
+
 
 
 #endif //GAME_H

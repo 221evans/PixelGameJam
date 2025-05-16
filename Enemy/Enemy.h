@@ -32,6 +32,7 @@ void EnemyInit(struct Enemy *enemy);
 void EnemyDraw(struct Enemy *enemy);
 void EnemyUpdate(struct Enemy *enemy, const float deltaTime);
 void EnemyDestroy(struct Enemy *enemy);
+bool DamageEnemy(struct Enemy *enemy, int damage);
 
 
 #endif //ENEMY_H

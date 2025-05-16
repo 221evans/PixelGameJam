@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 
+
 void RunGame(struct Game *game)
 {
     InitWindow(800, 450, "Game");
@@ -43,6 +44,7 @@ void InitGame(struct Game *game)
     game->maxEnemies = 3;
 
     SpawnEnemyWave(game);
+
 }
 
 void DrawGame(struct Game *game) {
@@ -65,6 +67,8 @@ void DrawGame(struct Game *game) {
     float waveProgress = game->waveTimer / game->timeBetweenWaves;
     DrawRectangle(20, 50, 200, 10, GRAY);
     DrawRectangle(20, 50, (int)(200 * waveProgress), 10, RED);
+
+
 }
 
 void UpdateGame( struct Game *game, float deltaTime)
@@ -124,7 +128,10 @@ void UpdateGame( struct Game *game, float deltaTime)
             game->enemyCount--;
             i--; // Check the newly swapped enemy in this position
         }
+
+        HandlePlayerAttack(game);
     }
+
 }
 
 void DestroyGame()
@@ -222,3 +229,42 @@ void SpawnEnemyWave(struct Game *game)
     // Increment wave counter
     game->currentWave++;
 }
+
+void HandlePlayerAttack(struct Game* game)
+{
+    if (!player.isAttacking)
+    {
+        return;
+    }
+
+    // Only deal damage on specific attack frames (middle of animation)
+    // For example, frames 3-5 of an 8-frame attack animation
+
+    if (player.currentFrame < 3 || player.currentFrame > 5)
+    {
+        return;
+    }
+
+    // Get players attackHitbox
+    Rectangle attackHitbox = GetPlayerAttackHitbox(&player);
+
+    // check collision with each enemy
+
+    for (int i = 0; i < game->enemyCount; i++) {
+        if (CheckCollisionRecs(attackHitbox, game->enemies[i].destRec)) {
+            // Damage the enemy and check if it died
+            bool died = DamageEnemy(&game->enemies[i], player.damage);
+
+            if (died) {
+                // Remove the enemy (swap with the last one and decrease count)
+                game->enemies[i] = game->enemies[game->enemyCount - 1];
+                game->enemyCount--;
+                i--; // Recheck the same index since we swapped in a new enemy
+            }
+        }
+    }
+
+
+
+}
+
